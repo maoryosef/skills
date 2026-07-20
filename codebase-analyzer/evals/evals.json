@@ -1,0 +1,50 @@
+{
+  "skill_name": "codebase-analyzer",
+  "evals": [
+    {
+      "id": 0,
+      "name": "python-api-overview",
+      "prompt": "I just inherited this Python service and I have no clue how it works. It's at /Users/maoryosef/.claude/skills/codebase-flow-maps-workspace/test-repos/pyshop. Can you map out the main flows so I can get oriented before I start making changes?",
+      "expected_output": "A committed Markdown doc with several Mermaid diagrams: a module/dependency map plus the order request lifecycle and data flow. Diagrams trace real code (app.py route -> auth -> order_service.create_order -> inventory -> payment -> db) with file:line citations. Valid Mermaid, readable altitude, honest about anything untraced.",
+      "files": [],
+      "expectations": [
+        "Output includes a Markdown file with at least two distinct ```mermaid diagrams",
+        "One diagram is a module/dependency map of the pyshop components (app, auth, services, db)",
+        "The order-creation flow is shown end-to-end: HTTP entry -> auth check -> order_service.create_order -> inventory reserve -> payment charge -> db save",
+        "The doc cites specific file:line locations, and every cited file path exists in the pyshop repo",
+        "All Mermaid diagrams are structurally valid (recognized diagram header, matched subgraph/end pairs)",
+        "The failure branches (out of stock / payment declined) or the Order status transitions (pending->reserved->paid/failed) are represented"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "ts-state-machine-targeted",
+      "prompt": "Diagram the job lifecycle in this worker at /Users/maoryosef/.claude/skills/codebase-flow-maps-workspace/test-repos/jobworker. I specifically want to see the state machine \u2014 how a job moves from queued through running to success or failure, including the retry path and when it gives up.",
+      "expected_output": "A state diagram (Mermaid stateDiagram-v2) showing queued -> running -> succeeded/failed, the failed -> queued retry edge, and failed/exhausted -> dead. Transitions labeled with the triggering functions (markRunning/markSucceeded/markFailed) traced to src/job.ts. Focused on the requested target rather than the whole repo.",
+      "files": [],
+      "expectations": [
+        "Output includes a Mermaid stateDiagram-v2",
+        "The diagram contains the states a job actually enters: queued, running, succeeded, and dead",
+        "Both the retry path (running -> queued on failure while attempts remain) and the give-up path (running -> dead when attempts are exhausted) are shown",
+        "Transitions are labeled with / attributed to the triggering functions (markRunning/markSucceeded/markFailed) and traced to src/job.ts",
+        "Every cited file path exists in the jobworker repo",
+        "GROUNDING: correctly handles that the 'failed' state in the JobState union is never assigned (flags it as dead code or omits it) rather than drawing a fictitious failed-> transition"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "go-architecture-shareable",
+      "prompt": "Give me a visual architecture overview of this Go repo at /Users/maoryosef/.claude/skills/codebase-flow-maps-workspace/test-repos/goshort that I can share with my team to explain how the URL shortener works.",
+      "expected_output": "An architecture/module map plus the request lifecycle (main -> handler -> shortener + cache -> store) and the cache-in-front-of-store data flow. Diagrams grounded in real code with file:line citations. Given 'share with my team', either a clean Markdown doc or an HTML artifact is acceptable.",
+      "files": [],
+      "expectations": [
+        "Output includes a module/architecture map showing main -> handler -> (shortener, cache) -> store",
+        "The request lifecycle for at least one route (/shorten or /r/{code}) is diagrammed from HTTP entry to the store",
+        "The cache-in-front-of-store behavior (read-through / write-through) is represented",
+        "The doc cites specific file:line locations, and every cited file path exists in the goshort repo",
+        "All diagrams are structurally valid Mermaid; if an HTML page is produced it is self-contained (no external network dependencies)",
+        "Every component shown corresponds to a real package/file in the repo (no invented components)"
+      ]
+    }
+  ]
+}
