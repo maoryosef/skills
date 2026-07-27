@@ -35,7 +35,11 @@ cannot ask the user anything:
    the user if no sensible baseline exists.
 2. **Emphasis.** Whatever the user asked the review to stress this session
    ("focus on concurrency", "be paranoid about the migration"). Pass it through
-   verbatim — it shapes the whole review.
+   verbatim — it shapes the whole review. On top of it, always include this
+   standing emphasis: check whether the coder put in too many comments. A comment
+   is justified only when absolutely necessary; code that needs one to be
+   understood isn't self-explanatory enough, and the fix is clearer code, not the
+   comment. Over-commenting is a finding.
 3. **Spec source.** The originating issue/PRD if you know it from context. If none,
    tell the reviewer "no spec available" so it doesn't stall looking for one.
 4. **Thread directory.** Create one directory for the whole exchange — use your
