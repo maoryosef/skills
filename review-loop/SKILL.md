@@ -60,9 +60,21 @@ contain:
   side becomes `PARKED` — escalated to the user, and neither side argues it
   further. The loop is capped at 4 review files. `PARKED` findings do not block a
   `SATISFIED` verdict; the verdict covers only findings still in play.
+- An instruction to first probe the repo's docs for architecture knowledge —
+  through a separate scout subagent (`Agent` tool), never by reading the docs
+  itself. The scout reads the markdown docs in the repo (README, CLAUDE.md,
+  `docs/`, any `*.md`) **as of the baseline commit** (`git show <baseline>:<path>`,
+  listed via `git ls-tree -r <baseline> --name-only`) — docs written or edited
+  during the coding session are part of the diff under review, and reading them
+  as background would bias the reviewer with the coder's own framing. The scout
+  returns **only** the parts relevant to reviewing this diff: architecture,
+  conventions, and invariants that touch the changed files. The scout absorbs
+  the bulk so the reviewer's context carries just the digest; the reviewer saves
+  it as `docs-digest.md` in the thread directory.
 - An instruction to invoke the **code-review** skill (via the `Skill` tool) — the
   two-axis Standards + Spec review, not the `code-review:code-review` PR plugin —
-  with the baseline you resolved, plus the emphasis and spec source.
+  with the baseline you resolved, plus the emphasis, the spec source, and the
+  docs digest.
 - The output contract: write `review-1.md` in the thread directory. Every finding
   gets a **stable ID** (`F1`, `F2`, …) it will keep for the whole loop, a severity,
   a `file:line`, and enough evidence that you can act on it without re-deriving it.
