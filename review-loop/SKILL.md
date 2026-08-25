@@ -42,23 +42,29 @@ cannot ask the user anything:
    docs) are never over-commenting findings.
 3. **Spec source.** The originating issue/PRD if you know it from context. If none,
    tell the reviewer "no spec available" so it doesn't stall looking for one.
-4. **Thread directory.** Create one directory for the whole exchange — a fresh
+4. **Reviewer model.** Default to `fable` — spawn the reviewer with
+   `model: "fable"`. Only pick another model when the user named one for this
+   session ("review with opus", "use sonnet for the reviewer"); then use theirs
+   verbatim and say which one you used.
+5. **Thread directory.** Create one directory for the whole exchange — a fresh
    per-run directory in your scratchpad (e.g. `<scratchpad>/review-loop-<slug>/`,
    suffixed if it already exists and is non-empty) unless the user named a place
    they want it kept. Stale round files from an earlier run must never be readable
    as current. All round files live here.
-5. **Charter.** Before spawning the reviewer, write `round-0.md` in the thread
+6. **Charter.** Before spawning the reviewer, write `round-0.md` in the thread
    directory: the user's request quoted verbatim, the resolved baseline SHA and how
-   it was chosen, the emphasis exactly as passed, and the spec-source decision.
+   it was chosen, the emphasis exactly as passed, the spec-source decision, and the
+   reviewer model with the reason it was chosen.
    The reviewer treats the charter as the reference copy of its mandate, and the
    user can audit afterwards that nothing was reframed on the way in.
 
 ## Round 1: the reviewer's findings
 
 Spawn the reviewer with the `Agent` tool (`subagent_type: "general-purpose"` so it
-has the `Skill` tool) and **save its agent ID** — the same reviewer must survive all
-rounds, or its rebuttals lose the context they're rebutting from. Its prompt must
-contain:
+has the `Skill` tool, and the model resolved in **Setup** — `model: "fable"` unless
+the user asked for another) and **save its agent ID** — the same reviewer must
+survive all rounds, or its rebuttals lose the context they're rebutting from. Its
+prompt must contain:
 
 - Its role: it is the reviewer in an adversarial review loop; a coder will respond
   in writing and it will be called back to verify and rebut.
