@@ -10,16 +10,19 @@ disable-model-invocation: true
 
 # Request a PR review in Slack
 
-Arguments: the first is the target Slack channel, the second (optional) is the PR
-number or URL. When the user gave no channel, ask for one — never guess a channel.
+Arguments, in any order:
+
+- The target Slack channel. When the user gave none, ask — never guess a channel.
+- Optional: a PR number or URL. Default is the PR of the current branch.
+- Optional: words like "just this PR", "single", or "no stack". They mean post about
+  one PR even when it belongs to a stack.
 
 Never post before the user approves the preview. This rule holds even if the user
 said "just post it" earlier in the session.
 
 ## 1. Resolve the PR
 
-Use the PR from the second argument if given. Otherwise take the PR of the current
-branch:
+Use the PR the user named. Otherwise take the PR of the current branch:
 
 ```
 gh pr view --json number,title,url,body,author,isDraft,additions,deletions,changedFiles,reviewRequests,headRefName,baseRefName
@@ -28,54 +31,71 @@ gh pr view --json number,title,url,body,author,isDraft,additions,deletions,chang
 If no PR exists for the branch, stop and tell the user. Do not create one.
 If more than one PR matches, ask the user which one.
 
-Then check whether the PR sits in a **stack**. A PR is stacked when its
-`baseRefName` is not the repo default branch, or when another open PR uses its
-`headRefName` as a base. Walk both directions to get the whole chain:
+Then look for a **stack**. A PR is stacked when its `baseRefName` is not the repo
+default branch, or when another open PR uses its `headRefName` as a base:
 
 ```
 gh pr list --state open --json number,title,url,body,headRefName,baseRefName,isDraft
 ```
 
 Follow base links down to the PR that targets the default branch, and head links up
-to the last PR nothing else builds on. The result is the stack in review order —
-bottom first. Include every PR in the chain, not only the ones the user named.
+to the last PR nothing else builds on. That chain is the stack, in review order —
+bottom first.
+
+**A stack is never assumed.** When the chain holds more than the resolved PR, and
+the user did not already say which they want, ask before drafting: this PR only, or
+the whole stack? Posting three teammates' worth of review requests when one was
+wanted is the expensive mistake here.
 
 ## 2. Resolve the channel
 
-The first argument names the channel. Strip a leading `#`. Confirm it exists with
-`slack_search_channels`. If the name matches nothing, or matches several channels,
-ask the user to pick before you continue.
+Strip a leading `#`. Confirm the channel exists with `slack_search_channels`. If the
+name matches nothing, or matches several channels, ask the user to pick.
 
-## 3. Draft the message
+## 3. Read the channel before you draft
 
-Keep it short — a reviewer must understand the ask in a few seconds. For a single
-PR:
+Read the last few posts with `slack_read_channel` (limit 10) and **mirror their
+shape**. Teams settle on a house style, and a message that ignores it reads as
+noise. Look at length, capitalization, whether anyone states an explicit ask, and
+whether links are bare or titled.
 
-- One line with the PR title as a link to the PR URL.
-- One or two lines on what the change does and why. Take this from the PR body, not
-  from a guess. If the body is empty, say so in the preview and ask the user for the
-  summary.
-- A size hint: files changed, plus additions and deletions.
-- The explicit ask: who should review, or a plain "review please" when nobody is
-  named.
-- Mark the PR as a draft when `isDraft` is true.
+The channel also tells you what to leave out. In a dedicated review-request channel
+(`#pr-reviews-*` and the like) the channel *is* the ask, so drop "review please"
+and drop size hints — everyone there is already looking for PRs to review.
 
-Write plain Slack text. Use `<url|title>` for the link. Do not @-mention anyone
-unless the user asked for it.
+If the channel read fails or the channel is empty, use the default below.
 
-### When the PR is part of a stack
+## 4. Draft the message
 
-Post one message for the whole stack, never one per PR. Shape it like this:
+Short by default. A reviewer decides from the first line whether to open the PR.
+
+**Single PR — the default shape:**
 
 ```
-*ENG-3439: group-scoped Network sandbox policies*, resolved per user in the bridge,
-behind LD flag `admin-sandbox-group-network-policies` (off). Tested end to end in
-dev-1. Review in order, each PR is based on the previous one:
+one lowercase sentence with the ticket id saying what the PR does
+https://github.com/org/repo/pull/1460
+```
 
-1. <https://github.com/org/repo/pull/1460|#1460> bridge + storage: group policy table, bridge actions, per-user resolution
-2. <https://github.com/org/repo/pull/1461|#1461> gateway + portal server: per-user sandbox config route, flag-gated CRUD routes
-3. <https://github.com/org/repo/pull/1465|#1465> portal client: Network Controls on GroupAccess with per-group Monitor mode
-Design: <https://link/to/design|link/to/design>
+Two lines: a plain sentence, then the bare PR URL on its own line. Send it with
+`unfurl_app_links: true` so Slack renders the GitHub preview card — that card
+carries the title, size, and status, which is why the message itself does not.
+
+Take the sentence from the PR body, not from a guess. If the body is empty, say so
+in the preview and ask the user for the summary. Say a PR is a draft when
+`isDraft` is true.
+
+Only go richer than two lines when the channel's recent posts are richer.
+
+**A stack — one message for the whole chain, never one per PR:**
+
+```
+**ENG-3439: group-scoped Network sandbox policies**, resolved per user in the bridge, behind LD flag `admin-sandbox-group-network-policies` (off). Tested end to end in dev-1. Review in order, each PR is based on the previous one:
+
+1. [#1460](https://github.com/org/repo/pull/1460) bridge + storage: group policy table, bridge actions, per-user resolution
+2. [#1461](https://github.com/org/repo/pull/1461) gateway + portal server: per-user sandbox config route, flag-gated CRUD routes
+3. [#1465](https://github.com/org/repo/pull/1465) portal client: Network Controls on GroupAccess with per-group Monitor mode
+
+Design: https://link/to/design
 ```
 
 The parts, in order:
@@ -84,29 +104,38 @@ The parts, in order:
   facts a reviewer needs before opening anything: where the behavior resolves, the
   feature flag and its state, and how it was tested. Take these from the PR bodies.
   Ask the user for the flag or the test status when no PR body states it — never
-  invent either.
-- **The review instruction**: say the order matters and that each PR builds on the
-  one above it.
+  invent either. The message claims the stack was verified; that claim must be true.
+- **The review instruction**: the order matters, each PR builds on the one above.
 - **A numbered list, bottom of the stack first.** One line per PR: the link with
-  `#<number>` as the text, then the area it touches, then a short summary of what it
-  does. Keep each line to one line. Summarize from the PR title and body.
+  `#<number>` as its text, the area it touches, then a short summary. One line each.
 - **A trailing `Design:` line** only when a design doc or spec exists.
 
-Skip the per-PR size hints here — they would stop the list being scannable. Mark a
-draft PR inline on its own line.
+Mark a draft PR inline on its own line. Skip per-PR size hints — they stop the list
+being scannable.
 
-## 4. Preview and approve
+**Formatting.** `slack_send_message` takes **standard markdown**, not Slack mrkdwn:
+`**bold**`, `` `code` ``, `[text](url)`. Do not write `<url|text>` or single-asterisk
+bold; Slack converts on send. Leave a URL bare when you want it to unfurl. Do not
+@-mention anyone unless the user asked for it.
 
-Show the exact message text and the target channel to the user. Then use
-`AskUserQuestion` with these options:
+## 5. Preview and approve
 
-- **Post it** — send as previewed.
-- **Edit first** — the user tells you what to change; redraft and preview again.
+The preview must live **inside** the question. Prose printed before an
+`AskUserQuestion` call is not shown to the user — they see only the dialog. Put the
+full message text in the `preview` field of the "Post it" option (single-select
+renders it side by side), and name the target channel in the `question` string.
+
+Options:
+
+- **Post it** — description: sends to `#channel` exactly as previewed.
+- **Edit first** — description: "type the change as Other, e.g. 'shorter, one line'".
+  Word it so the user can give the edit in one step; a bare "Edit first" that makes
+  you ask "what should change?" costs an extra round for nothing.
 - **Cancel** — post nothing.
 
-Loop on "Edit first" until the user approves or cancels.
+Redraft and preview again after an edit. Loop until the user approves or cancels.
 
-## 5. Post
+## 6. Post
 
-Only after approval, send with `slack_send_message` to the resolved channel. Report
-the permalink of the posted message.
+Only after approval, send with `slack_send_message` to the resolved channel, with
+`unfurl_app_links: true`. Report the permalink of the posted message.
