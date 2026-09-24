@@ -1,0 +1,23 @@
+{
+  "skill_name": "pr-code-review",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "/pr-code-review https://github.com/accomplish-ai/yoda/pull/8 make sure its not breaking anything, and try to find bugs in the business logic",
+      "expected_output": "One severity-sorted table with evidence per finding, verified-clean line, and a per-question verdict with a merge call",
+      "files": [],
+      "assertions": [
+        "Report contains exactly one findings table with the columns Severity, Location, Issue, Evidence, Suggested fix (a 'None' row is allowed)",
+        "Every finding row has non-empty Evidence that quotes code, a repro sequence, a test result, or a caller",
+        "Report states the fixed point and head commits (SHAs) and the spec source above the table",
+        "Report contains a 'Verified clean' line listing what was checked and found fine",
+        "Report contains a verdict that answers 'not breaking anything' and 'bugs in business logic' with yes/no and a bold merge call",
+        "No nit findings (style, naming, comment wording, formatter/linter issues) appear in the table",
+        "Findings are sorted by severity, most severe first",
+        "Report notes the PR's CI check state",
+        "Transcript notes show the review fetched the PR branch and inspected code at head (not just the diff)",
+        "The repo clone at ~/GIT/accomplish-yoda was left untouched (no branch change, no worktree left behind) and nothing was posted to GitHub"
+      ]
+    }
+  ]
+}
