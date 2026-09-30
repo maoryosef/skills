@@ -1,0 +1,66 @@
+{
+  "skill_name": "split-and-dispatch",
+  "evals": [
+    {
+      "id": 0,
+      "name": "split-from-plan",
+      "prompt": "We just finished planning milestone 3 of ledger; the plan is in plan.md. lets see how we split the work between different workers, and according to the projected complexity decide if it should be a sonnet or opus agent",
+      "expected_output": "A wave-ordered worker table with disjoint file ownership, dependencies, complexity reason and model per task, a mechanics section with the invariant rules for every prompt, and a closing go question. No launch.",
+      "files": [
+        "fixtures/plan.md"
+      ],
+      "assertions": [
+        "Reply contains a worker table with per-task owned files, complexity, and model, and each task's dependencies are stated either in a column or in the wave heading it sits under",
+        "Tasks are grouped into numbered waves derived from dependencies; the first worker wave depends on no other worker task (a coordinator wave 0 is allowed)",
+        "File ownership across tasks is disjoint: no path appears under two different tasks",
+        "Every task row, including low-complexity ones, gives a reason for its model choice, not only a rating word",
+        "Opus is assigned to the tasks that can silently lose or corrupt data (same-transaction audit stamp, exporter watermark/commit order)",
+        "Reply lists the milestone invariants that go into every worker prompt (audit_daily is the only per-day aggregation; src/audit never imports src/ui)",
+        "Reply states what the coordinator keeps for itself (merge order, checks it runs, wiring) and whether deploys happen between waves",
+        "Reply ends with a go question inviting changes to the split, and no worker prompt files or launch commands exist in the outputs directory",
+        "Reply lists the plan's open gaps (for example the audit_daily view body) with a proposed answer for each, instead of deciding them silently",
+        "Every module listed in the plan's Modules section is assigned to exactly one task or to the coordinator"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "go-writes-prompts",
+      "prompt": "Plan is in plan.md, the split we agreed on is in agreed-split.md. cool, spin up workers (opus / sonnet depending on the complexity) to implement this. Note for this test environment: the superset CLI is not available here, so write the worker prompt files you would launch with into the outputs directory, plus a launch.md with the exact commands you would run and the coordinator table, then stop.",
+      "expected_output": "A common.md with role, read-first list, repo conventions, milestone rules, live-resource safety, and the DONE/BLOCKED envelopes; one prompt file per task with Deliver and Verify sections and exact paths; launch.md with per-task model and wave-1-only launches; wave-2 prompts prepared but not launched.",
+      "files": [
+        "fixtures/plan.md",
+        "fixtures/agreed-split.md"
+      ],
+      "assertions": [
+        "A shared common.md exists with worker role and worktree/branch rules, read-first list, repo conventions, the milestone rules, live-database safety, and both SUPERSET_WORKER_DONE and SUPERSET_WORKER_BLOCKED envelopes",
+        "One prompt file exists per task in the agreed split (A1..A6)",
+        "Each task prompt has a Deliver section with exact file paths and a Verify section with at least one task-specific command beyond the generic test run",
+        "Task prompts for A3 name the local stand-in or the merged dependency shapes it needs from A1/A2",
+        "launch.md launches only the wave-1 tasks (A1, A2) now and holds A3..A6 until their dependencies merge",
+        "launch.md assigns the model per task exactly as in agreed-split.md (A1 Opus, A2 Sonnet, A3 Opus, A4 Sonnet, A5 Sonnet, A6 Sonnet)",
+        "launch.md contains a coordinator table with Task, Model, Branch/Workspace, and State columns",
+        "Commit message instruction in common.md includes the Co-Authored-By attribution line from the plan",
+        "Task IDs, owned paths, and models in the prompts match agreed-split.md, and any added path is called out in the reply or launch.md",
+        "No final plan decision is overridden in the prompts without the reply flagging it to the user"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "orchestrate-request-without-split",
+      "prompt": "the plan for ledger milestone 3 is in plan.md. use superset:orchestrate to spin up agents (opus) to implement this. Note for this test environment: the superset CLI is not available here; if you reach the point of launching, write what you would launch into the outputs directory instead.",
+      "expected_output": "The skill presents the split table first and stops for the user's go instead of launching; all tasks on Opus as requested but the complexity column is kept.",
+      "files": [
+        "fixtures/plan.md"
+      ],
+      "assertions": [
+        "Reply presents a split table (tasks, owned files, dependencies, waves) and ends the turn without launching",
+        "Reply stops and asks the user for a go instead of launching or writing launch commands",
+        "All tasks are assigned Opus as the user requested, and the reply names which tasks would be Sonnet under the default rule",
+        "A complexity or risk column is still present so the user can see where risk sits",
+        "No worker prompt files or launch commands were written to the outputs directory",
+        "File ownership across tasks is disjoint: no path appears under two different tasks",
+        "Reply lists the plan's open gaps with a proposed answer for each instead of deciding them silently"
+      ]
+    }
+  ]
+}
