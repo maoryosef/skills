@@ -1,21 +1,30 @@
 ---
 name: pr-code-review
 description: >-
-  Review a PR, a PR stack, or the working branch (uncommitted files and unpushed
-  commits) before a human reviews it. Runs the code-review skill with a focus the
-  user states (usually "does not break anything" plus a business-logic question),
-  validates every finding against the code with evidence, drops nits, and reports
-  one table sorted by severity in simple English with a final verdict. Invoked as
-  /pr-code-review.
+  Read-only review of a PR, a PR stack, or the working branch (uncommitted files
+  and unpushed commits) before a human reviews it. Validates every finding
+  against the code with evidence, drops nits, and reports one table sorted by
+  severity in simple English with a final verdict. Never posts to GitHub. Use
+  this whenever the user writes "/pr-code-review" or "pr-code-review" in a
+  message, asks to "review this PR", "review the stack", "review my changes",
+  "make sure it's not breaking anything", or "find bugs in the business logic",
+  even when they name the code-review skill instead. Do not substitute the
+  code-review:code-review plugin for it; that plugin posts a comment on the PR.
 argument-hint: "[pr-url | pr-number | stack | branch | last N commits | ref] [what to verify]"
-disable-model-invocation: true
 ---
 
 # PR code review
 
 The user runs this before they ask a person to review. The output must be short,
-proven, and easy to act on. Read-only: never post to the PR, never push, never
-fix code here. When the user later says "fix it" or "post it", that is a new task.
+proven, and easy to act on.
+
+**Read-only, toward GitHub and toward the repo.** Never post a review, a comment,
+or an approval on the PR, never push, never fix code here. The user reads the
+table first and decides what, if anything, goes on the PR; a finding that turns
+out wrong is cheap in a terminal and embarrassing on a PR the whole team sees.
+This rule also covers anything you delegate: a sub-agent or another skill that
+would write to GitHub is not to be used. When the user later says "fix it" or
+"post it", that is a new task with its own approval.
 
 ## 1. Parse the arguments
 
@@ -143,10 +152,21 @@ before spawning anything.
 When the user asked why checks fail, open the failing run's log
 (`gh run view <id> --log-failed`) and put the root cause in the table.
 
-## 3. Run the code-review skill
+## 3. Run the two-axis code-review skill
 
-Invoke the `code-review` skill with the fixed point from step 2. It runs a
-Standards sub-agent and a Spec sub-agent in parallel. Two of its steps need care:
+Invoke the local `code-review` skill (the one described as "Review the changes
+since a fixed point ... along two axes — Standards and Spec"). It runs a
+Standards sub-agent and a Spec sub-agent in parallel and prints the result; it
+writes nothing to GitHub.
+
+Do not confuse it with `code-review:code-review`, the plugin described as "Code
+review a pull request". That plugin ends by posting a comment on the PR, which
+breaks the read-only rule above. If only the plugin is available, do not use it.
+Run the two axes yourself instead: one sub-agent for Standards (documented repo
+standards plus real defects), one for Spec (PR body, ticket, and the focus
+questions), both told to report back to you and post nothing.
+
+Two of the local skill's steps need care:
 
 - It diffs `<fixed-point>...HEAD`. That is wrong for a PR reviewed from another
   branch and drops uncommitted changes in branch mode. Give the sub-agents the
