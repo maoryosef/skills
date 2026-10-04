@@ -3,8 +3,9 @@ name: pr-code-review
 description: >-
   Read-only review of a PR, a PR stack, or the working branch (uncommitted files
   and unpushed commits) before a human reviews it. Validates every finding
-  against the code with evidence, drops nits, and reports one table sorted by
-  severity in simple English with a final verdict. Never posts to GitHub. Use
+  against the code with evidence, drops nits, runs ponytail-review for
+  over-engineering, and reports one table sorted by severity in simple English
+  with a final verdict. Never posts to GitHub. Use
   this whenever the user writes "/pr-code-review" or "pr-code-review" in a
   message, asks to "review this PR", "review the stack", "review my changes",
   "make sure it's not breaking anything", or "find bugs in the business logic",
@@ -60,6 +61,12 @@ Default rules, always in force unless the user says otherwise:
   claims. The user reads tests as proof that the change works, so a test that
   passes for the wrong reason is a real finding (usually Medium). A wish for
   more coverage is still a nit.
+- **Unnecessary comments are a finding, comment wording is not.** The user's
+  global rule is no code comments: a comment that restates the code, marks a
+  section, or narrates a change means the code is not clear enough, and the fix
+  is clearer code. Report it (Low) with the line. Comments the repo mandates
+  (license headers, required API docs) and comments that explain a non-obvious
+  why are fine. How a comment is worded stays a nit.
 - **Evidence for every finding.** A finding with no proof is not reported.
 - **Plain English** (CEFR B2). Short sentences. No jargon the PR author would not
   use.
@@ -152,7 +159,13 @@ before spawning anything.
 When the user asked why checks fail, open the failing run's log
 (`gh run view <id> --log-failed`) and put the root cause in the table.
 
-## 3. Run the two-axis code-review skill
+## 3. Run the review axes
+
+Four axes, same diff: Standards and Spec from the `code-review` skill, Breakage
+done by you, and Simplicity from the `ponytail-review` skill. Every candidate
+from every axis goes through step 4 before it is reported.
+
+### Standards and Spec
 
 Invoke the local `code-review` skill (the one described as "Review the changes
 since a fixed point ... along two axes — Standards and Spec"). It runs a
@@ -187,8 +200,10 @@ Feed it:
   calls unless they hide a real bug. The user wants to know what is broken, not
   what could be refactored.
 
-Add a third pass yourself, in the main context, for the **breakage axis**. The
-sub-agents look at the diff; you look at what the diff touches:
+### Breakage
+
+Add this pass yourself, in the main context. The sub-agents look at the diff;
+you look at what the diff touches:
 
 - For every changed export, signature, schema, event, migration, config key, or
   workflow step: grep for all callers and readers on the head tree. Anything that
@@ -201,6 +216,24 @@ sub-agents look at the diff; you look at what the diff touches:
   broken. A test that passes on both sides tests nothing.
 - Run the unit tests that cover the changed files when they exist and run in under
   a few minutes. Report the count.
+
+### Simplicity
+
+Invoke the `ponytail-review` skill on the exact same diff command from step 2.
+It hunts only over-engineering and returns one line per finding, tagged
+`delete:`, `stdlib:`, `native:`, `yagni:`, or `shrink:`, with what to cut and
+what replaces it, and ends with `net: -N lines possible` or `Lean already.
+Ship.` It applies nothing. When the skill is not installed, run the pass
+yourself with the same five tags and the same one-line form; do not skip it.
+
+Its findings are not nits. "Could be extracted" is a nit because it adds code;
+a ponytail finding removes code, and the user asked for this axis. Each line is
+a candidate for step 4 like any other: open the code, confirm the replacement
+really covers the same inputs and error paths, and drop it when it does not. A
+`shrink` or `yagni` line that would change behaviour is not a simplification.
+
+Severity is `Low` unless the extra complexity hides a real bug, in which case
+rate the bug. Ponytail findings never block a merge on their own.
 
 ## 4. Validate every finding before it goes in the table
 
@@ -251,7 +284,9 @@ finding that only shows when the PRs are combined.
   branch mode. One cell, one place. When a finding
   spans files, name the one where the fix goes.
 - **Issue**: one or two sentences. What is wrong and what breaks because of it.
-  Written for the PR author, in plain English.
+  Written for the PR author, in plain English. A Simplicity finding starts with
+  its ponytail tag (`yagni:`, `stdlib:`, ...) so the author can tell a cut from
+  a bug at a glance.
 - **Evidence**: the quoted line, the repro sequence, the test output, or the
   caller that still uses the old shape. Short. A reader must be able to check it
   in under a minute.
@@ -266,6 +301,8 @@ Under the table, in this order and nothing more:
   line each: what it was and why it is not a finding ("timing assert has 425 ms
   margin over 5 runs", "pre-existing on master, not in the diff"). Leave out
   candidates that were pure style.
+- **Simplicity**: the ponytail-review closing line, `net: -N lines possible`
+  counted over the Simplicity findings that survived step 4, or `Lean already.`
 - **Verdict**: one line per focus question with a yes or no and a short reason,
   then one bold line: safe to merge, or not, and which findings block it. A
   Critical or High blocks. Medium and Low do not, unless the user's focus question

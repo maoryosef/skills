@@ -16,7 +16,8 @@
         "Findings are sorted by severity, most severe first",
         "Report notes the PR's CI check state",
         "Transcript notes show the review fetched the PR branch and inspected code at head (not just the diff)",
-        "The repo clone at ~/GIT/accomplish-yoda was left untouched (no branch change, no worktree left behind) and nothing was posted to GitHub"
+        "The repo clone at ~/GIT/accomplish-yoda was left untouched (no branch change, no worktree left behind) and nothing was posted to GitHub",
+        "Report contains a 'Simplicity' line from the ponytail-review pass (either 'net: -N lines possible' or 'Lean already'), and any Simplicity finding in the table starts with its ponytail tag and is rated Low unless it hides a bug"
       ]
     }
   ]

@@ -3,9 +3,11 @@ name: review-loop
 description: >-
   Run an adversarial review loop with one persistent reviewer agent until every
   finding is fixed, withdrawn, or escalated to the user — review findings
-  actually fixed, not just listed. Use whenever the user asks to "review and
-  fix", "run the review loop", "get this reviewed until it's clean", or wants
-  any iterative reviewer/coder back-and-forth on a branch, PR, or working diff.
+  actually fixed, not just listed. The reviewer reviews the way pr-code-review
+  does (Standards, Spec, Breakage, and ponytail-review Simplicity, every finding
+  validated against the code). Use whenever the user asks to "review and fix",
+  "run the review loop", "get this reviewed until it's clean", or wants any
+  iterative reviewer/coder back-and-forth on a branch, PR, or working diff.
 ---
 
 # Review Loop
@@ -27,10 +29,16 @@ Two properties make this loop worth its cost, so protect them:
 Resolve everything the reviewer needs **before** spawning it — it runs headless and
 cannot ask the user anything:
 
-1. **Baseline (fixed point).** From the user's words if given ("since main", a SHA,
-   a branch). Otherwise infer the merge-base with the main branch. Verify it
-   resolves (`git rev-parse`) and the diff against `HEAD` is non-empty. Only ask
-   the user if no sensible baseline exists.
+1. **Target and baseline (fixed point).** Resolve them exactly as the
+   `pr-code-review` skill does in its step 2, because the reviewer will run that
+   skill: a PR (fixed point `origin/<base>`, head `origin/<head>`, three-dot
+   diff), a stack (each PR against its own base plus the whole stack), or the
+   working branch (fixed point from the user's words, else the merge-base with
+   the default branch, two-dot diff against the working tree so uncommitted and
+   untracked files are in it). In this loop the fixes land in the working tree,
+   so the working-branch form is the usual one, and every round reviews the
+   tree, not `HEAD`. Verify the fixed point resolves (`git rev-parse`) and the
+   diff is non-empty. Only ask the user if no sensible baseline exists.
 2. **Emphasis.** Whatever the user asked the review to stress this session
    ("focus on concurrency", "be paranoid about the migration"). Pass it through
    verbatim — it shapes the whole review. On top of it, always include this
@@ -40,8 +48,11 @@ cannot ask the user anything:
    comment. Over-commenting is a finding. Documented repo standards override this
    standing emphasis: comments the repo mandates (license headers, required API
    docs) are never over-commenting findings.
-3. **Spec source.** The originating issue/PRD if you know it from context. If none,
-   tell the reviewer "no spec available" so it doesn't stall looking for one.
+3. **Spec source.** The PR body, the linked Jira ticket (fetch it with the
+   Atlassian tools when the branch or PR names an `ENG-` key), the originating
+   PRD, and the user's focus questions. If none, tell the reviewer "no spec
+   available; the focus questions are the spec" so it doesn't stall looking for
+   one.
 4. **Reviewer model.** Default to `fable` — spawn the reviewer with
    `model: "fable"`. Only pick another model when the user named one for this
    session ("review with opus", "use sonnet for the reviewer"); then use theirs
@@ -85,22 +96,35 @@ prompt must contain:
   conventions, and invariants that touch the changed files. The scout absorbs
   the bulk so the reviewer's context carries just the digest; the reviewer saves
   it as `docs-digest.md` in the thread directory.
-- An instruction to invoke the **code-review** skill (via the `Skill` tool) — the
-  two-axis Standards + Spec review, not the `code-review:code-review` PR plugin —
-  with the baseline you resolved, plus the emphasis, the spec source, and the
-  docs digest.
-- The output contract: write `review-1.md` in the thread directory. Every finding
-  gets a **stable ID** (`F1`, `F2`, …) it will keep for the whole loop, a severity,
-  a `file:line`, and enough evidence that you can act on it without re-deriving it.
-  End the file with a verdict line: `VERDICT: CONTINUE` (or `SATISFIED` if the
-  review is clean).
+- An instruction to invoke the **pr-code-review** skill (via the `Skill` tool)
+  with the target and fixed point you resolved, the emphasis, the spec source,
+  and the docs digest. That skill is the review method: it runs the two-axis
+  `code-review` skill (Standards and Spec), the Breakage pass over callers and
+  behaviour, and the `ponytail-review` Simplicity pass, then validates every
+  candidate against the code at head and drops the ones it cannot prove. The
+  reviewer must not call `code-review` directly, and never the
+  `code-review:code-review` plugin, which posts to the PR. pr-code-review is
+  read-only toward GitHub and the repo, which is what a reviewer in this loop
+  needs.
+- The output contract: write `review-1.md` in the thread directory. Start with
+  pr-code-review's two header lines (fixed point and head, spec source). Then
+  every finding from its table gets a **stable ID** (`F1`, `F2`, …) it will keep
+  for the whole loop, the severity, the `file:line`, the issue in plain English,
+  and the evidence, so you can act on it without re-deriving it. Simplicity
+  findings keep their ponytail tag in the issue text. Copy the `Verified clean`,
+  `Checked and dropped`, and `Simplicity` lines under the findings; the dropped
+  list is how you and the user know the review was not shallow. End the file
+  with a verdict line: `VERDICT: CONTINUE` (or `SATISFIED` if the review is
+  clean).
 - Return value: the path to `review-1.md` and the finding count.
 
 If `review-1.md` comes back `SATISFIED` with no findings, verify the reviewer did
 the work before accepting it: `docs-digest.md` and `review-1.md` exist in the
-thread directory, and the review file shows the code-review skill actually ran and
-meets the output contract. If so, skip straight to the final report; if not,
-re-prompt the reviewer once, then escalate to the user.
+thread directory, and the review file carries pr-code-review's header lines,
+a `Verified clean` line that names what was checked (callers grepped, tests run
+with a count, CI state), and a `Simplicity` line. A clean verdict without those
+lines means the method did not run. If they are there, skip straight to the
+final report; if not, re-prompt the reviewer once, then escalate to the user.
 
 ## Your turn: respond in writing
 
@@ -137,7 +161,12 @@ where the user can audit it. Tell it to:
   itself** — a claim in the response file is a pointer, not proof. Where a fix's
   correctness turns on tests, re-run the command the coder recorded.
 - Re-examine the fix diffs for *new* problems the fixes introduced — new code is in
-  scope, and this is where regressions hide.
+  scope, and this is where regressions hide. Hold new code to the same bar as
+  round 1: the Breakage pass over what the fix touches, the ponytail-review
+  Simplicity pass over the new lines, and pr-code-review's validation step
+  (open the code, trace the path, run the repro when it is cheap) before any new
+  finding is written down. Anything checked and dropped goes in the review
+  file's dropped list, not silently.
 - For each disputed finding: withdraw it in a sentence if the coder's evidence
   holds; hold it `STILL OPEN` only with new evidence of its own, or by showing the
   dispute never engaged the evidence already on file. Repeating the original
@@ -181,7 +210,10 @@ Close with a report to the user (this is the deliverable — the files are the
 appendix):
 
 - A short table: each finding ID, one-line summary, severity, outcome
-  (`fixed` / `fixed (unverified)` / `withdrawn` / `parked`).
+  (`fixed` / `fixed (unverified)` / `withdrawn` / `parked`), sorted by severity
+  with Critical first, Simplicity findings keeping their ponytail tag.
+- The Simplicity result after the loop: lines removed by the fixes, and the
+  `net:` figure still possible for anything parked.
 - For each **parked** finding: both sides' best argument in one line each, so the
   user can adjudicate in seconds. The reviewer's line is copied verbatim from its
   park summary in the review file — never your paraphrase of it.
