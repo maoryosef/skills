@@ -1,22 +1,16 @@
 ---
 name: split-and-dispatch
 description: >-
-  Turn a finished design or plan into parallel worker tasks, pick Opus or
-  Sonnet per task by risk, get the user's go, then launch and coordinate the
-  workers through superset:orchestrate while acting as the architect who
-  verifies and marks work done. Use this whenever a planning or design session
-  reaches implementation and the user says anything like "split the work",
-  "how do we split this between workers", "which model should take what",
-  "opus or sonnet depending on complexity", "spin up workers/agents/sessions
-  to implement this", or "use superset:orchestrate to implement this", even
-  when they only name the orchestrate skill. superset:orchestrate is the
-  transport this skill drives; it does not replace this skill.
+  Use when the user approves a finished plan for implementation and asks to split the work between workers.
+  Not for handing an open discussion to one new worker; use superset:orchestrate for that.
 ---
 
 # Split and Dispatch
 
 You are moving from a plan to parallel implementation. The work has two
 phases with a hard stop between them:
+
+If the user asks to hand the work to one new worker to keep planning or discussing, do not split it: write the handoff and dispatch one planning worker that waits for the user.
 
 1. **Split.** Produce a worker table the user can argue with: tasks, file
    ownership, dependencies, waves, and a model per task with the reason.
@@ -179,6 +173,13 @@ for a redispatch, and diffed when a worker misreads it.
   worktree.
 - The `SUPERSET_WORKER_DONE` and `SUPERSET_WORKER_BLOCKED` envelopes from
   the orchestrate skill, with a `checks` line that includes the test count.
+- How long the envelope may be: it must fit on one screen the coordinator
+  can read. Each field stays short, and longer notes (handoff items, detailed
+  check output) go in a handoff file on the branch that the `handoff:` line
+  names.
+  Write this rule into the envelope section of `common.md` every time, also
+  when you reuse a prompt file from an earlier session, and ask for the key
+  check numbers first in the `checks:` line.
 
 **Task file** (`<id>.md`) per worker:
 

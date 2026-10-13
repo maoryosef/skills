@@ -1,0 +1,8 @@
+---
+name: zsh-shell-commands
+description: Use when you run any shell command on this Mac.
+---
+The shell is zsh: a glob that matches nothing stops the whole command with "no matches found", so quote every pattern you pass to a tool (`--include='*.ts'`) and use `find` instead of `ls` on a glob that may match nothing.
+This Mac has no `timeout` command. Do not prefix commands with `timeout N`; run them without it, or use the tool's own timeout option.
+The shell is zsh. zsh reads a bare word that starts with `=`, such as `=====`, as a command path, and the call fails with `===== not found`.
+For separators between chained outputs, quote them, as in `echo '====='`, or use dashes, as in `echo -------`.

@@ -63,7 +63,7 @@ gh api repos/<owner>/<repo>/issues/<number>/comments --paginate
 
 ## 3. Keep only what still needs action
 
-- Drop resolved threads. Say how many you dropped.
+- Drop resolved threads, and threads whose last comment is the PR author's reply saying it is fixed or answered. Say how many of each you dropped.
 - Drop empty review bodies and pure approvals ("LGTM").
 - Keep outdated threads, but mark them — the code moved, the point may still stand.
 - A bot overview comment often repeats the inline findings. Do not list the same
@@ -84,8 +84,8 @@ Use one scale: **Critical**, **High**, **Medium**, **Low**, **Nit**.
 
 One table, sorted Critical first. Columns:
 
-| Severity | Location | Issue | Suggested fix |
-|---|---|---|---|
+| Severity | Location | Issue | Suggested fix | Verdict |
+|---|---|---|---|---|
 
 - **Location**: `path:line`, linked to the comment URL. Review summaries and
   conversation comments have no file; write "PR" there.
@@ -93,6 +93,8 @@ One table, sorted Critical first. Columns:
   wrong and why it matters. Do not copy the comment; restate it.
 - **Suggested fix**: what the reviewer proposed. When the reviewer gave none, write
   the most direct fix yourself and mark it `(mine)`.
+- **Verdict**: before you list a comment, open the code it points at and check its
+  claim. Write Confirmed, Partly, Pre-existing, or Not reproduced, with the one fact you checked.
 
 Above the table, one line: how many open comments, how many resolved were skipped,
 and whether any thread is outdated. Nothing else — no preamble, no closing summary.

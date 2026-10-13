@@ -1,0 +1,11 @@
+{
+  "name": "maoryosef-skills",
+  "owner": { "name": "Maor Yosef" },
+  "plugins": [
+    {
+      "name": "maor",
+      "source": "./",
+      "description": "Maor's review, planning, and dispatch skills, plus an architect subagent"
+    }
+  ]
+}

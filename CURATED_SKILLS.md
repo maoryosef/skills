@@ -34,7 +34,7 @@ Source: https://github.com/accomplish-ai/page-drop
 
 ## maoryosef/skills (own)
 
-Source: https://github.com/maoryosef/skills (local clone: `~/projects/skills`). Not in the lockfile, copied by hand.
+Source: https://github.com/maoryosef/skills (local clone: `~/projects/skills`). Not in the lockfile, copied by hand. Also a Claude Code plugin (`maor@maoryosef-skills`) that adds the `architect` agent.
 
 | Skill | Description |
 |---|---|
@@ -43,6 +43,26 @@ Source: https://github.com/maoryosef/skills (local clone: `~/projects/skills`). 
 | pr-comments | Show open PR review comments in one table sorted by severity. |
 | review-loop | Adversarial reviewer/coder loop until every finding is fixed or escalated. |
 | split-and-dispatch | Split a plan into parallel worker tasks and drive them via superset:orchestrate. |
+| checking-a-claim-before-stating-it | Check a claim (fixed, blocked, missing) before telling the developer. |
+| checking-tool-claims | Cite current docs or a measurement for any claim about a tool or service. |
+| fixing-review-comments | Fix every valid review comment, or list the ones held back with the reason. |
+| handing-steps-to-the-developer | Give manual steps with what, when, the command, and the expected output. |
+| keeping-a-doc-in-sync | Track what a discussion added that the open design doc does not have yet. |
+| pointing-to-a-worker-terminal | Name the exact Superset workspace and terminal the developer must act in. |
+| reporting-what-is-left | End a turn with everything still running, uncommitted, or open. |
+| running-pnpm | Run pnpm through corepack on this Mac. |
+| sending-review-fixes | Add a Slack DM to each reviewer when pushing review fixes. |
+| zsh-shell-commands | zsh pitfalls on this Mac: unmatched globs, no `timeout`, `=` words. |
+
+Requires these skills from other sources. The plugin does not ship them, so install them first on a new machine:
+
+| Needed by | Skill | Source |
+|---|---|---|
+| pr-code-review (and review-loop through it) | code-review | mattpocock/skills |
+| pr-code-review (and review-loop through it) | ponytail-review | DietrichGebert/ponytail |
+| architect agent (preloaded) | codebase-design | mattpocock/skills |
+| architect agent (preloaded) | ponytail | DietrichGebert/ponytail |
+| split-and-dispatch | superset:orchestrate | Superset app |
 
 ## mattpocock/skills
 

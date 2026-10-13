@@ -79,7 +79,7 @@ Never review from the PR page alone. Fetch the code.
 
 ```
 gh pr view <n> --json title,body,url,state,isDraft,baseRefName,headRefName,headRefOid,commits,files,statusCheckRollup
-git fetch origin <baseRefName> <headRefName>
+git fetch origin '+refs/heads/<baseRefName>:refs/remotes/origin/<baseRefName>' '+refs/heads/<headRefName>:refs/remotes/origin/<headRefName>'
 ```
 
 When the URL points at a repo other than the current one (past runs reviewed an
@@ -99,6 +99,8 @@ git worktree add --detach <scratchpad>/pr<n> origin/<headRefName>
 ```
 
 Remove it at the end with `git worktree remove --force <path>`.
+
+Before running tests in the review worktree, run the repo's package install inside it. Never symlink or copy the user's `node_modules` into it: an install run in the worktree then rewrites the links in the user's own tree, and removing the worktree leaves them broken. Give the same rule to every sub-agent that runs code in the worktree.
 
 **Stack:** a PR is stacked when its base is not the default branch, or another
 open PR uses its head as a base:
@@ -280,6 +282,8 @@ finding that only shows when the PRs are combined.
 - **Severity**: `Critical`, `High`, `Medium`, `Low`. When the user asks for
   P1/P2/P3, map Critical and High to P1, Medium to P2, Low to P3, and say so once
   under the table. P1 is the most severe.
+  Give every severity its reason in the row: the worst real impact and how often
+  it triggers, so the rating can be checked without asking for a re-check.
 - **Location**: `path:line` on the head commit, or on the working tree in
   branch mode. One cell, one place. When a finding
   spans files, name the one where the fix goes.

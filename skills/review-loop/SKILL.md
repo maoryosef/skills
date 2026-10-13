@@ -30,7 +30,7 @@ Resolve everything the reviewer needs **before** spawning it — it runs headles
 cannot ask the user anything:
 
 1. **Target and baseline (fixed point).** Resolve them exactly as the
-   `pr-code-review` skill does in its step 2, because the reviewer will run that
+   `maor:pr-code-review` skill does in its step 2, because the reviewer will run that
    skill: a PR (fixed point `origin/<base>`, head `origin/<head>`, three-dot
    diff), a stack (each PR against its own base plus the whole stack), or the
    working branch (fixed point from the user's words, else the merge-base with
@@ -96,7 +96,7 @@ prompt must contain:
   conventions, and invariants that touch the changed files. The scout absorbs
   the bulk so the reviewer's context carries just the digest; the reviewer saves
   it as `docs-digest.md` in the thread directory.
-- An instruction to invoke the **pr-code-review** skill (via the `Skill` tool)
+- An instruction to invoke the **`maor:pr-code-review`** skill (via the `Skill` tool)
   with the target and fixed point you resolved, the emphasis, the spec source,
   and the docs digest. That skill is the review method: it runs the two-axis
   `code-review` skill (Standards and Spec), the Breakage pass over callers and
