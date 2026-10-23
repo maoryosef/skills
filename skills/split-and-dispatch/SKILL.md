@@ -258,6 +258,7 @@ dependencies are already merged.
   re-arm it after each wake. Report status as a table with `Task`, `Model`,
   `Branch`, `State`, and one line for what the user must do (a merge, a
   permission, an approval gate). Do not narrate polling.
+  When the tasks are stacked PRs, the table has one row per PR in stack order: its CI, the reviewer's verdict on the pushed head, open threads, each reviewer still requesting changes and whether their threads are resolved, the protected paths it changes (such as `infra/`), whether it still merges cleanly with the current base, what merging it changes in deployed infrastructure, and whether it is safe to merge now or what it waits on. Answer a status question with this table first, before more work, and give a PR's row unasked in the turn its fixes are pushed and its checks pass.
 - **Stop on a blocker that needs the user.** A machine permission, a review
   gate, a missing secret, a decision the plan did not make: say exactly what
   the user must do, keep the unaffected workers running, and tell the blocked
