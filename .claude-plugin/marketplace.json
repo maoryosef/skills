@@ -5,7 +5,7 @@
     {
       "name": "maor",
       "source": "./",
-      "description": "Maor's review, planning, and dispatch skills, plus an architect subagent"
+      "description": "Maor's review, planning, and dispatch skills, plus architect and clickhouse-pipelines subagents"
     }
   ]
 }

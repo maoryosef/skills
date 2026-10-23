@@ -34,12 +34,13 @@ Source: https://github.com/accomplish-ai/page-drop
 
 ## maoryosef/skills (own)
 
-Source: https://github.com/maoryosef/skills (local clone: `~/projects/skills`). Not in the lockfile, copied by hand. Also a Claude Code plugin (`maor@maoryosef-skills`) that adds the `architect` agent.
+Source: https://github.com/maoryosef/skills (local clone: `~/projects/skills`). Not in the lockfile, copied by hand. Also a Claude Code plugin (`maor@maoryosef-skills`) that adds the `architect` and `clickhouse-pipelines` agents.
 
 | Skill | Description |
 |---|---|
 | codebase-analyzer | Map a codebase's main flows and diagram each one. |
 | pr-code-review | Read-only, evidence-based review of a PR, stack, or branch. |
+| pr-api-proto | Show the API a PR adds or changes as a proto3 sketch. Read-only. |
 | pr-comments | Show open PR review comments in one table sorted by severity. |
 | review-loop | Adversarial reviewer/coder loop until every finding is fixed or escalated. |
 | split-and-dispatch | Split a plan into parallel worker tasks and drive them via superset:orchestrate. |
@@ -62,6 +63,7 @@ Requires these skills from other sources. The plugin does not ship them, so inst
 | pr-code-review (and review-loop through it) | ponytail-review | DietrichGebert/ponytail |
 | architect agent (preloaded) | codebase-design | mattpocock/skills |
 | architect agent (preloaded) | ponytail | DietrichGebert/ponytail |
+| clickhouse-pipelines agent (preloaded) | ponytail | DietrichGebert/ponytail |
 | split-and-dispatch | superset:orchestrate | Superset app |
 
 ## mattpocock/skills
@@ -119,6 +121,7 @@ Source: https://github.com/cursor/plugins (path `pstack/skills/`)
 | Skill | Source | Description |
 |---|---|---|
 | find-skills | https://github.com/vercel-labs/skills | Discover and install agent skills. |
+| security-audit | https://github.com/cloudflare/security-audit-skill | Security guidance, focused reviews, and full codebase audits or pen tests. |
 | show-me | https://github.com/humanlayer/skills (`plugins/show-me`) | Explain a topic visually with diagrams and HTML artifacts. |
 | skill-creator | https://github.com/anthropics/skills | Create, edit, and evaluate skills. |
 

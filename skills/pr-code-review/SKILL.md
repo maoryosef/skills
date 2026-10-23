@@ -157,7 +157,7 @@ but still review the working tree, which is newer than what the PR shows.
 Confirm the fixed point with `git rev-parse` and check the diff is not empty
 before spawning anything.
 
-**CI:** for a PR, read `statusCheckRollup`. A failing check is always a finding.
+**CI:** for a PR, read `statusCheckRollup`. Do not put red CI, failing checks or type and test failures caused by CI state into the findings table or the verdict.
 When the user asked why checks fail, open the failing run's log
 (`gh run view <id> --log-failed`) and put the root cause in the table.
 
@@ -178,7 +178,7 @@ Do not confuse it with `code-review:code-review`, the plugin described as "Code
 review a pull request". That plugin ends by posting a comment on the PR, which
 breaks the read-only rule above. If only the plugin is available, do not use it.
 Run the two axes yourself instead: one sub-agent for Standards (documented repo
-standards plus real defects), one for Spec (PR body, ticket, and the focus
+standards plus real defects), one for Spec (PR body, ticket,  every decision record and design-doc decision already merged on the base branch that binds the changed code, and the focus
 questions), both told to report back to you and post nothing.
 
 Two of the local skill's steps need care:
@@ -196,7 +196,7 @@ Feed it:
 
 - The fixed point and head, exactly as resolved above.
 - The spec source: the PR body, the linked Jira ticket (fetch it when the branch
-  or PR names an `ENG-` key), and the user's focus questions. When there is no
+  or PR names an `ENG-` key), every decision record and design-doc decision already merged on the base branch that binds the changed code, and the user's focus questions. When there is no
   ticket and no PR body, the focus questions are the spec.
 - The instruction that the Standards axis must skip smell-baseline judgement
   calls unless they hide a real bug. The user wants to know what is broken, not
@@ -205,17 +205,42 @@ Feed it:
 ### Breakage
 
 Add this pass yourself, in the main context. The sub-agents look at the diff;
-you look at what the diff touches:
+you look at what the diff touches.
+
+"Not breaking anything" covers product behaviour. Every screen, response, and
+message must stay true for its user. No crash and no type error is not enough.
+Read your own probe and test output the same way: evidence you already hold
+can still show a bug.
 
 - For every changed export, signature, schema, event, migration, config key, or
   workflow step: grep for all callers and readers on the head tree. Anything that
   still uses the old shape is a finding.
+- When the PR swaps a data source or dependency (stub to real, one service to
+  another), list everything that still uses the old one and meets the new one:
+  links and IDs it hands over, option lists it fills, error paths its tests
+  covered. A part that still runs on the old source and now reaches the new one
+  is a finding.
+- Compare every type and format the contract promises (IDs, enums, dates, units)
+  with what the source really produces.
+- Every default, fallback, and empty state must say only what the system knows.
+  Check its meaning against the rule for it (a decision record, the design doc),
+  not only that it renders.
+- For every gate (a feature flag, a setting, a role or plan check), grep for the
+  code that writes the value it reads. A gate that nothing in production can open
+  is a finding.
+- When the PR computes something the codebase already computes elsewhere,
+  compare the two rules. Two answers for the same number is a finding.
+- For a new or changed query or external call, check its cost in production: does
+  it use the indexes or sort key, does it fit the caller's time, memory, and rate
+  limits, and does it hold as the data grows.
 - For a refactor: diff the behaviour, not the text. Same inputs must give the
   same outputs, same side effects, same error paths.
 - For a bug fix: check the fix does not open a different bug ("make sure this fix
   is not creating a different bug").
 - For an e2e or test change: confirm the test still fails when the feature is
   broken. A test that passes on both sides tests nothing.
+- For removed or rewritten tests: list the behaviours they covered and check that
+  the new tests still cover each one. A dropped error-path check is a finding.
 - Run the unit tests that cover the changed files when they exist and run in under
   a few minutes. Report the count.
 
@@ -254,7 +279,10 @@ For each candidate finding from the sub-agents or your own pass:
    query against the local DB, a call to the dev environment), run it and use the
    output as the evidence.
 4. **Check the PR body against the diff.** A body that claims a change the diff
-   does not contain is a finding. Reviewers read the body first.
+   does not contain is a finding. Reviewers read the body first. An older gap
+   outside the diff is still a finding when the PR body or a focus question
+   claims something that the gap makes false. Report it in the table with that
+   reason; do not move it to "Checked and dropped".
 5. **Rate the real impact**, not the code smell. Ask: what breaks for a user or an
    operator, and how often? That decides the severity.
 
@@ -303,7 +331,8 @@ Under the table, in this order and nothing more:
   needs to know what "no findings" covers.
 - **Checked and dropped**: the candidates from step 4 that did not survive, one
   line each: what it was and why it is not a finding ("timing assert has 425 ms
-  margin over 5 runs", "pre-existing on master, not in the diff"). Leave out
+  margin over 5 runs", "pre-existing on master, and no PR claim depends on
+  it"). Leave out
   candidates that were pure style.
 - **Simplicity**: the ponytail-review closing line, `net: -N lines possible`
   counted over the Simplicity findings that survived step 4, or `Lean already.`

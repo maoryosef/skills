@@ -6,3 +6,4 @@ For each service or command you built, say whether it is running right now or th
 Before you end the turn, list everything still open: background jobs still running, uncommitted changes, commits not pushed, checks not yet done, and follow-ups you promised.
 Before you list a worker or background job as still running, read its output in that same turn; do not repeat an earlier status.
 Do not say the work is done, ready or that nothing is left while any of these remain.
+When you ask the developer to confirm a value or choice, say whether a record fixed it or you picked it yourself, and where you took it from.
