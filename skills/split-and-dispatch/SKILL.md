@@ -125,6 +125,7 @@ Here is the split. <N> workers in <M> waves, <one-sentence model rule>.
 - Branch per worker off <base>, named <pattern>, workspaces via superset.
 - File ownership per wave in one line each, proving no overlap.
 - What the coordinator does at merge time and which checks it runs itself.
+- Which review each PR gets before it is reported ready, in stack order: `/maor:review-loop` on each finished worker branch and `/pr-code-review` on a PR you write yourself, and what each review checks.
 - Deploys: none between waves, or the exact list and order.
 - Rules that go into every prompt (the two or three invariants of this milestone).
 
@@ -248,6 +249,7 @@ dependencies are already merged.
   run the check command yourself, and compare the numbers in the envelope
   with what you see. Only then mark the task done and update the checklist or
   progress page. Nobody else marks items done.
+  Before you report any PR ready or suggest a merge order, a PR you or a worker wrote included, run the review the split named for it and say in the report which review ran and its verdict.
 - **Merge in dependency order.** Merge or approve a task only after its own
   dependencies are merged. Do the coordinator wiring at merge time. Rebase
   dependent branches when a base moves and ask the worker to confirm no
