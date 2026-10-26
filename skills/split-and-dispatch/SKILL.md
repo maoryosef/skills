@@ -258,6 +258,7 @@ dependencies are already merged.
   re-arm it after each wake. Report status as a table with `Task`, `Model`,
   `Branch`, `State`, and one line for what the user must do (a merge, a
   permission, an approval gate). Do not narrate polling.
+  When the developer asks for the status of PRs while you coordinate workers, list only the PRs and branches of the work you just discussed, each with its base and whether it is stacked; list other PRs in the repository only when asked.
 - **Stop on a blocker that needs the user.** A machine permission, a review
   gate, a missing secret, a decision the plan did not make: say exactly what
   the user must do, keep the unaffected workers running, and tell the blocked
