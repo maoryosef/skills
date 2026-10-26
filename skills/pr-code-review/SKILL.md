@@ -68,6 +68,7 @@ Default rules, always in force unless the user says otherwise:
   (license headers, required API docs) and comments that explain a non-obvious
   why are fine. How a comment is worded stays a nit.
 - **Evidence for every finding.** A finding with no proof is not reported.
+- **Merge conflicts are not findings.** Do not report merge conflicts with main, or "needs a rebase", as a finding or a reason in a verdict. A rebase is routine; report problems in the code and the decisions.
 - **Plain English** (CEFR B2). Short sentences. No jargon the PR author would not
   use.
 
