@@ -1,6 +1,6 @@
 ---
 name: zsh-shell-commands
-description: Use when you write any Bash tool command on this Mac, including echo separators or chained cat calls.
+description: Use when you write any Bash tool command on this Mac, also as a helper agent, including echo separators or chained cat calls.
 ---
 The shell is zsh: a glob that matches nothing stops the whole command with "no matches found", so quote every pattern you pass to a tool (`--include='*.ts'`) and use `find` instead of `ls` on a glob that may match nothing.
 This Mac has no `timeout` command. Do not prefix commands with `timeout N`; run them without it, or use the tool's own timeout option.
