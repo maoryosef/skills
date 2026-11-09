@@ -157,6 +157,7 @@ but still review the working tree, which is newer than what the PR shows.
 
 Confirm the fixed point with `git rev-parse` and check the diff is not empty
 before spawning anything.
+On a large diff, read `git diff <fixed-point> --stat` first, then diff a few paths at a time, so the app does not cut the output.
 
 **CI:** for a PR, read `statusCheckRollup`. Do not put red CI, failing checks or type and test failures caused by CI state into the findings table or the verdict.
 When the user asked why checks fail, open the failing run's log
