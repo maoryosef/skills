@@ -34,7 +34,7 @@ Source: https://github.com/accomplish-ai/page-drop
 
 ## maoryosef/skills (own)
 
-Source: https://github.com/maoryosef/skills (local clone: `~/projects/skills`). Not in the lockfile, copied by hand. Also a Claude Code plugin (`maor@maoryosef-skills`) that adds the `architect` and `clickhouse-pipelines` agents.
+Source: https://github.com/maoryosef/skills (local clone: `~/projects/skills`). Not in the lockfile, copied by hand. Also a Claude Code plugin (`maor@maoryosef-skills`) that adds the `architect`, `clickhouse-pipelines`, `terraform-expert`, and `gcp-expert` agents.
 
 | Skill | Description |
 |---|---|
@@ -64,6 +64,8 @@ Requires these skills from other sources. The plugin does not ship them, so inst
 | architect agent (preloaded) | codebase-design | mattpocock/skills |
 | architect agent (preloaded) | ponytail | DietrichGebert/ponytail |
 | clickhouse-pipelines agent (preloaded) | ponytail | DietrichGebert/ponytail |
+| terraform-expert agent (preloaded) | ponytail | DietrichGebert/ponytail |
+| gcp-expert agent (preloaded) | ponytail | DietrichGebert/ponytail |
 | split-and-dispatch | superset:orchestrate | Superset app |
 
 ## mattpocock/skills
