@@ -1,6 +1,6 @@
 ---
 name: checking-a-claim-before-stating-it
-description: Use when you are about to tell the developer that something is fixed, works or now shows, that a step is blocked or cannot run yet, or that something they need does not exist.
+description: Use when you are about to tell the developer that something is fixed, works or now shows, that an issue is still open or can be closed, that a step is blocked or cannot run yet, or that something they need does not exist.
 ---
 # Checking a claim before stating it
 
