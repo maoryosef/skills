@@ -68,7 +68,10 @@ Default rules, always in force unless the user says otherwise:
   (license headers, required API docs) and comments that explain a non-obvious
   why are fine. How a comment is worded stays a nit.
 - **Evidence for every finding.** A finding with no proof is not reported.
-- **Merge conflicts are not findings.** Do not report merge conflicts with main, or "needs a rebase", as a finding or a reason in a verdict. A rebase is routine; report problems in the code and the decisions.
+- **Merge conflicts and known gates are not findings.** Do not report merge conflicts with main, "needs a rebase", or a release gate, a dependency on another PR or a merge order the PR body already states, as a finding or a reason in a verdict, and do not list those steps. The verdict says whether the code is correct; report problems in the code and the decisions.
+- Do not call the PR "not safe to merge", or report as a finding, red CI that the PR body already explains.
+- Leave known gates out of the findings table and out of any reply to the author, as well as the verdict.
+- The verdict line says whether the code is correct and which findings matter.
 - **Plain English** (CEFR B2). Short sentences. No jargon the PR author would not
   use.
 
