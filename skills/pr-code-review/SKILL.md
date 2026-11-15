@@ -9,7 +9,8 @@ description: >-
   this whenever the user writes "/pr-code-review" or "pr-code-review" in a
   message, asks to "review this PR", "review the stack", "review my changes",
   "make sure it's not breaking anything", or "find bugs in the business logic",
-  even when they name the code-review skill instead. Do not substitute the
+  even when they name the code-review skill instead, and when you opened a
+  pull request and are about to report it. Do not substitute the
   code-review:code-review plugin for it; that plugin posts a comment on the PR.
 argument-hint: "[pr-url | pr-number | stack | branch | last N commits | ref] [what to verify]"
 ---
@@ -18,6 +19,7 @@ argument-hint: "[pr-url | pr-number | stack | branch | last N commits | ref] [wh
 
 The user runs this before they ask a person to review. The output must be short,
 proven, and easy to act on.
+Also run it, in a Fable subagent, on every pull request you open, a stacked one included, before you report that pull request, and put its verdict in the report.
 
 **Read-only, toward GitHub and toward the repo.** Never post a review, a comment,
 or an approval on the PR, never push, never fix code here. The user reads the
