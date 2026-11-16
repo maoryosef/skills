@@ -270,6 +270,9 @@ dependencies are already merged.
 
 ### Finish
 
+When worker PRs target a hub branch (one open PR into main holds them all), say in every status report that "merged" means merged into the hub branch, not main, and that the hub PR is the only one that reaches main. Show the topology as a small tree.
+
+In split-and-dispatch or any multi-PR work, name the base of each PR in the first status table, and say which single PR merges into main.
 When every task is merged or its PR is open and green, give one closing
 table: task, model, branch or PR link, checks you ran yourself, and what
 remains for the user in order. Distinguish worker claims from your own
