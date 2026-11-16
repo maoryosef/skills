@@ -8,3 +8,4 @@ Before you list a worker or background job as still running, read its output in 
 When a run or check is still going as you end the turn, either wait on it in that turn with one blocking call, such as `gh pr checks <number> --watch`, and give the state it reached, or say it is still running and that nothing is watching it. Never promise to watch it or report back later.
 Do not say the work is done, ready or that nothing is left while any of these remain.
 When you ask the developer to confirm a value or choice, say whether a record fixed it or you picked it yourself, and where you took it from.
+When a test left an app, a daemon or a profile of its own running on this Mac, name it as still open in the closing update, and stop it and delete the profile once the testing is done.
