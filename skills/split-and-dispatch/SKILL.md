@@ -262,7 +262,8 @@ dependencies are already merged.
   `Branch`, `State`, and one line for what the user must do (a merge, a
   permission, an approval gate). Do not narrate polling.
   When the tasks are stacked PRs, the table has one row per PR in stack order: its CI, the reviewer's verdict on the pushed head, open threads, each reviewer still requesting changes and whether their threads are resolved, the protected paths it changes (such as `infra/`), whether it still merges cleanly with the current base, what merging it changes in deployed infrastructure, and whether it is safe to merge now or what it waits on. Answer a status question with this table first, before more work, and give a PR's row unasked in the turn its fixes are pushed and its checks pass.
-  When the developer asks for the status of PRs while you coordinate workers, list only the PRs and branches of the work you just discussed, each with its base and whether it is stacked; list other PRs in the repository only when asked.
+  When the developer asks for the status of PRs while you coordinate workers, list only the PRs and branches of the work you just discussed, each with its base, whether it is stacked, and whether GitHub can merge it into that base now (`gh pr view <n> --json mergeable,mergeStateStatus`); list other PRs in the repository only when asked.
+  Never call a PR ready to merge while GitHub reports a conflict; say it needs the conflicts resolved first.
 - **Stop on a blocker that needs the user.** A machine permission, a review
   gate, a missing secret, a decision the plan did not make: say exactly what
   the user must do, keep the unaffected workers running, and tell the blocked
