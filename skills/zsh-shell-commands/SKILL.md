@@ -7,3 +7,4 @@ This Mac has no `timeout` command. Do not prefix commands with `timeout N`; run 
 The shell is zsh. zsh reads a bare word that starts with `=`, such as `=====`, as a command path, and the call fails with `===== not found`.
 For separators between chained outputs, quote them, as in `echo '====='`, or use dashes, as in `echo -------`.
 Never give a shell function a short name such as `l`, `g` or `rd`: they are aliases in this zsh, and defining them fails with `parse error near `()'`. Use a longer unique name, such as `ch_lifecycle`.
+Never run a command that prints a credential, such as a token command, even to time it: in zsh a redirect next to a pipe, as in `cmd 2>&1 >/dev/null | grep`, still sends the output down the pipe.
