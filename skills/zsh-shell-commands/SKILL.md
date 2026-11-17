@@ -7,3 +7,6 @@ This Mac has no `timeout` command. Do not prefix commands with `timeout N`; run 
 The shell is zsh. zsh reads a bare word that starts with `=`, such as `=====`, as a command path, and the call fails with `===== not found`.
 For separators between chained outputs, quote them, as in `echo '====='`, or use dashes, as in `echo -------`.
 Never give a shell function a short name such as `l`, `g` or `rd`: they are aliases in this zsh, and defining them fails with `parse error near `()'`. Use a longer unique name, such as `ch_lifecycle`.
+Never use `path` as a shell variable name, as in `for path in a b c`: in zsh the array `path` is tied to `PATH`, so assigning it replaces PATH and every later command in the same call fails with "command not found". Use `route`, `file` or `p`.
+The same holds for zsh's other tied names: `cdpath`, `fpath`, `manpath`.
+Check loop and temp variable names before running a multi-command line.
