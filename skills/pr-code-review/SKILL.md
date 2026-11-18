@@ -68,7 +68,10 @@ Default rules, always in force unless the user says otherwise:
   (license headers, required API docs) and comments that explain a non-obvious
   why are fine. How a comment is worded stays a nit.
 - **Evidence for every finding.** A finding with no proof is not reported.
-- **Merge conflicts are not findings.** Do not report merge conflicts with main, or "needs a rebase", as a finding or a reason in a verdict. A rebase is routine; report problems in the code and the decisions.
+- **Merge conflicts and known gates are not findings.** Do not report merge conflicts with main, "needs a rebase", or a release gate, a dependency on another PR or a merge order the PR body already states, as a finding or a reason in a verdict, and do not list those steps. The verdict says whether the code is correct; report problems in the code and the decisions.
+- Do not call the PR "not safe to merge", or report as a finding, red CI that the PR body already explains.
+- Leave known gates out of the findings table and out of any reply to the author, as well as the verdict.
+- The verdict line says whether the code is correct and which findings matter.
 - **Plain English** (CEFR B2). Short sentences. No jargon the PR author would not
   use.
 
@@ -100,6 +103,7 @@ git worktree add --detach <scratchpad>/pr<n> origin/<headRefName>
 ```
 
 Remove it at the end with `git worktree remove --force <path>`.
+To read the PR's existing review comments, print one line per comment with a cut body, as in `gh api repos/<owner>/<repo>/pulls/<n>/comments --paginate -q '.[] | "\(.id) \(.user.login) \(.path):\(.line) reply_to=\(.in_reply_to_id)\n   \(.body[0:330])"'`; one JSON object per comment is cut as too large on a busy PR.
 
 Before running tests in the review worktree, run the repo's package install inside it. Never symlink or copy the user's `node_modules` into it: an install run in the worktree then rewrites the links in the user's own tree, and removing the worktree leaves them broken. Give the same rule to every sub-agent that runs code in the worktree.
 
@@ -203,6 +207,9 @@ Feed it:
 - The instruction that the Standards axis must skip smell-baseline judgement
   calls unless they hide a real bug. The user wants to know what is broken, not
   what could be refactored.
+- The instruction to read a large saved diff one file or one line range per
+  command, and to shorten long lines with `cut -c`, since the app cuts an
+  output that is too large.
 
 ### Breakage
 
@@ -353,9 +360,10 @@ Keep the findings and evidence in context so these take one step:
 
 - "fix the issues" — fix them in the working tree and leave them unstaged unless
   told to commit.
-- "post the should-fix comments on the PR" — post one review comment per
-  finding at its location, in the same plain English, and nothing for Low unless
-  asked.
+- "post the comments" or "post the should-fix comments on the PR" — post one
+  review comment per finding at its location, in the same plain English. "Post
+  the comments" means every finding in the table, Low included; hold Low back
+  only when the user says "should-fix" or names which severities to post.
 - "explain finding N" or "how can it happen?" — show the full trace from step 4.
   If you cannot, withdraw the finding and say so plainly.
 - "show it in a table" — the table is already the format; re-show it unchanged.
