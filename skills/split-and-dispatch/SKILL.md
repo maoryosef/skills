@@ -254,6 +254,7 @@ dependencies are already merged.
   dependencies are merged. Do the coordinator wiring at merge time. Rebase
   dependent branches when a base moves and ask the worker to confirm no
   conflict markers remain.
+  Before you merge a worker's PR into the stack or the trunk, run a subagent with the `pr-code-review` skill on that PR, and fix or answer its findings first.
   When a pull request that is not one of your tasks merges to the base branch and the open stacks need it, touch its files, or it fixes a check that is red on them, tell the worker of each affected stack's bottom branch at once to rebase on it, and say why.
 - **Launch the next wave per task**, not per wave: as soon as a task's
   dependencies are all merged, launch it with the real handoff data.
