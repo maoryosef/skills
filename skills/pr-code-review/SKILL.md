@@ -353,9 +353,10 @@ Keep the findings and evidence in context so these take one step:
 
 - "fix the issues" — fix them in the working tree and leave them unstaged unless
   told to commit.
-- "post the should-fix comments on the PR" — post one review comment per
-  finding at its location, in the same plain English, and nothing for Low unless
-  asked.
+- "post the comments" or "post the should-fix comments on the PR" — post one
+  review comment per finding at its location, in the same plain English. "Post
+  the comments" means every finding in the table, Low included; hold Low back
+  only when the user says "should-fix" or names which severities to post.
 - "explain finding N" or "how can it happen?" — show the full trace from step 4.
   If you cannot, withdraw the finding and say so plainly.
 - "show it in a table" — the table is already the format; re-show it unchanged.
