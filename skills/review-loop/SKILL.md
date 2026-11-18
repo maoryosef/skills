@@ -221,3 +221,5 @@ appendix):
 
 If anything was parked, say plainly that those items await the user's call — don't
 present a parked loop as a clean one.
+
+When you change the reviewed code after the loop ends, such as a refactor the user asks for, run the same review on the new change before you report it done, and say what changed since the last round.
