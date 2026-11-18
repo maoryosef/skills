@@ -203,6 +203,9 @@ Feed it:
 - The instruction that the Standards axis must skip smell-baseline judgement
   calls unless they hide a real bug. The user wants to know what is broken, not
   what could be refactored.
+- The instruction to read a large saved diff one file or one line range per
+  command, and to shorten long lines with `cut -c`, since the app cuts an
+  output that is too large.
 
 ### Breakage
 
