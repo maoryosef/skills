@@ -20,6 +20,9 @@ argument-hint: "[pr-url | pr-number | stack | branch | last N commits | ref] [wh
 The user runs this before they ask a person to review. The output must be short,
 proven, and easy to act on.
 Also run it, in a subagent, on every pull request you open, a stacked one included, before you report that pull request, and put its verdict in the report.
+Until that review ends, the first line of every message about the pull request says the review is still running and the user should not merge it yet. Never lead with green CI while the review runs.
+- While a review or another blocking check runs, make line 1 of the status "Do not merge yet: <what> is still running.", then give the rest.
+- When the review ends, make line 1 the verdict.
 
 **Read-only, toward GitHub and toward the repo.** Never post a review, a comment,
 or an approval on the PR, never push, never fix code here. The user reads the
