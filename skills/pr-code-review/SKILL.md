@@ -105,6 +105,7 @@ git worktree add --detach <scratchpad>/pr<n> origin/<headRefName>
 ```
 
 Remove it at the end with `git worktree remove --force <path>`.
+To grep the repo for a text during the review, limit the search with a pathspec after `--` and cut each line, as in `git grep -n '<text>' -- <folders> | cut -c1-300`; a grep of the whole tree is cut as too large.
 To read the PR's existing review comments, print one line per comment with a cut body, as in `gh api repos/<owner>/<repo>/pulls/<n>/comments --paginate -q '.[] | "\(.id) \(.user.login) \(.path):\(.line) reply_to=\(.in_reply_to_id)\n   \(.body[0:330])"'`; one JSON object per comment is cut as too large on a busy PR.
 
 Before running tests in the review worktree, run the repo's package install inside it. Never symlink or copy the user's `node_modules` into it: an install run in the worktree then rewrites the links in the user's own tree, and removing the worktree leaves them broken. Give the same rule to every sub-agent that runs code in the worktree.
