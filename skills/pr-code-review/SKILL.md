@@ -20,6 +20,7 @@ argument-hint: "[pr-url | pr-number | stack | branch | last N commits | ref] [wh
 The user runs this before they ask a person to review. The output must be short,
 proven, and easy to act on.
 Also run it, in a subagent, on every pull request you open, a stacked one included, before you report that pull request, and put its verdict in the report.
+While that review runs, the first line of every message about the pull request says the review is still in progress and the pull request must not be merged yet, also when CI is green; when it ends, the first line gives its verdict.
 
 **Read-only, toward GitHub and toward the repo.** Never post a review, a comment,
 or an approval on the PR, never push, never fix code here. The user reads the
