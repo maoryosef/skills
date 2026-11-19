@@ -223,3 +223,4 @@ If anything was parked, say plainly that those items await the user's call — d
 present a parked loop as a clean one.
 
 When you change the reviewed code after the loop ends, such as a refactor the user asks for, run the same review on the new change before you report it done, and say what changed since the last round.
+When the loop reviews a pull request, read every comment and review thread on it, from bots and security scanners too, before you report the loop done, and list the open ones in that report.
