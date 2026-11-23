@@ -1,12 +1,14 @@
 ---
 name: zsh-shell-commands
 description: Use when you run any shell command on this Mac, including one that prints a separator line or chains several commands.
+metadata:
+  accomplish_note: "Skill updated by Accomplish on behalf of Maor Yosef on 2026-11-23"
 ---
 The shell is zsh: a glob that matches nothing stops the whole command with "no matches found", so quote every pattern you pass to a tool (`--include='*.ts'`) and use `find` instead of `ls` on a glob that may match nothing.
 This Mac has no `timeout` program. Do not wrap a command in `timeout`; set the Bash tool's own timeout parameter instead.
 The shell is zsh. zsh reads a bare word that starts with `=`, such as `=====`, as a command path, and the call fails with `===== not found`.
 For separators between chained outputs, quote them, as in `echo '====='`, or use dashes, as in `echo -------`.
-Never give a shell function a short name such as `l`, `g` or `rd`: they are aliases in this zsh, and defining them fails with `parse error near `()'`. Use a longer unique name, such as `ch_lifecycle`.
+Define a shell helper as `function name { ... }`, never `name() { ... }`: zsh expands an alias in the `name()` form, so a short name such as `l`, `g` or `rd`, which are aliases in this zsh, stops the whole command with `parse error near `()'`. A longer unique name, such as `ch_lifecycle`, also avoids the clash.
 Never use `path` as a shell variable name, as in `for path in a b c`: in zsh the array `path` is tied to `PATH`, so assigning it replaces PATH and every later command in the same call fails with "command not found". Use `route`, `file` or `p`.
 The same holds for zsh's other tied names: `cdpath`, `fpath`, `manpath`.
 Check loop and temp variable names before running a multi-command line.
