@@ -1,11 +1,13 @@
 ---
 name: reporting-what-is-left
-description: Use when you end a turn that built, changed, committed pushed or started something, give a status, say that work is ready to run, or hand the developer a step to do.
+description: Use when you end a turn that built, changed, committed pushed or started something, give a status, say a background run is still going, say that work is ready to run, or hand the user a step to do.
+metadata:
+  accomplish_note: "Skill updated by Accomplish on behalf of Maor Yosef on 2026-11-23"
 ---
 For each service or command you built, say whether it is running right now or the developer must start it, and give the exact command to start it.
 When you hand the user a sign-in or approval step, say how long it stays valid, or say that you do not know and to do it right away.
 In every update, even a one-line one, and before you end the turn, list everything still open: background jobs still running, uncommitted changes, commits not pushed, checks not yet done, a person's approval or review the work waits on, and follow-ups you promised, and say whether the developer must act.
-Before you list a worker or background job as still running, read its output in that same turn; do not repeat an earlier status.
+Before you list a worker or background job as still running, read its output or process list in that same turn and confirm it started and is moving; do not repeat an earlier status. If it did not start, say so and restart it before you end the turn.
 When a run or check is still going as you end the turn, either wait on it in that turn with one blocking call, such as `gh pr checks <number> --watch`, and give the state it reached, or say it is still running and that nothing is watching it. Never promise to watch it or report back later.
 Do not say the work is done, ready or that nothing is left while any of these remain.
 When you ask the developer to confirm a value or choice, say whether a record fixed it or you picked it yourself, and where you took it from.
