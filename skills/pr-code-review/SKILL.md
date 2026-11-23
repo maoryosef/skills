@@ -13,13 +13,15 @@ description: >-
   pull request and are about to report it. Do not substitute the
   code-review:code-review plugin for it; that plugin posts a comment on the PR.
 argument-hint: "[pr-url | pr-number | stack | branch | last N commits | ref] [what to verify]"
+metadata:
+  accomplish_note: "Skill updated by Accomplish on behalf of Maor Yosef on 2026-11-23"
 ---
 
 # PR code review
 
 The user runs this before they ask a person to review. The output must be short,
 proven, and easy to act on.
-Also run it, in a subagent, on every pull request you open, a stacked one included, before you report that pull request, and put its verdict in the report.
+Also run it, in a subagent, on every pull request you open, a stacked one included, before you report that pull request, and put its verdict in the report. Run it again on every later change to that pull request's code, before you report the change done.
 
 **Read-only, toward GitHub and toward the repo.** Never post a review, a comment,
 or an approval on the PR, never push, never fix code here. The user reads the
