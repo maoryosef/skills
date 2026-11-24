@@ -1,6 +1,8 @@
 ---
 name: checking-a-claim-before-stating-it
-description: Use when you are about to tell the developer that something is fixed, works or now shows, that an issue is still open or can be closed, that a step is blocked or cannot run yet, or that something they need does not exist.
+description: Use when you are about to tell the user that something is fixed, works or now shows, that an issue is still open or can be closed, that a step is blocked or cannot run yet or cannot be done on this machine, that something they need does not exist, or that nothing in the code does something.
+metadata:
+  accomplish_note: "Skill updated by Accomplish on behalf of Maor Yosef on 2026-11-24"
 ---
 # Checking a claim before stating it
 
