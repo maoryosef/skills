@@ -13,6 +13,8 @@ description: >-
   pull request and are about to report it. Do not substitute the
   code-review:code-review plugin for it; that plugin posts a comment on the PR.
 argument-hint: "[pr-url | pr-number | stack | branch | last N commits | ref] [what to verify]"
+metadata:
+  accomplish_note: "Skill updated by Accomplish on behalf of Maor Yosef on 2026-11-26"
 ---
 
 # PR code review
@@ -27,7 +29,7 @@ table first and decides what, if anything, goes on the PR; a finding that turns
 out wrong is cheap in a terminal and embarrassing on a PR the whole team sees.
 This rule also covers anything you delegate: a sub-agent or another skill that
 would write to GitHub is not to be used. When the user later says "fix it" or
-"post it", that is a new task with its own approval.
+"post it", that is a new task with its own approval, except on a pull request you opened yourself: there, fix the findings you judge valid, push them, and run the review again until a round finds nothing, without asking first; list only the findings that need the user's decision, with the reason.
 
 ## 1. Parse the arguments
 
